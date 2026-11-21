@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07080d">
+<meta name="description" content="BNX APK PRO - High-tech APK store, tools, projects, deep-link sharing, and cloud admin control room">
+<meta property="og:title" content="BNX APK PRO">
+<meta property="og:description" content="BNX APK PRO - APK tools, projects, deep-link sharing and more">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%230b0d14'/%3E%3Cpath d='M50 14L80 27v22c0 19-12.5 32-30 37C32.5 81 20 68 20 49V27l30-13z' fill='none' stroke='%23ff2a3d' stroke-width='7'/%3E%3Cpath d='M38 50l8 8 16-16' fill='none' stroke='%2322e6ff' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>BNX APK PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@500;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<style>
+:root{--bg:#07080d;--s1:#0e1017;--s2:#151823;--line:rgba(255,255,255,.09);--txt:#f3f4f8;--txm:#9ca3af;--txd:#6b7280;--red:#ff2a3d;--red2:#990a19;--cyan:#22e6ff;--gold:#ffc83d;--ok:#38f08c;--err:#ff4d6d}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans','Noto Sans Bengali',sans-serif;font-size:15px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{background:none;border:none;cursor:pointer}
+input,textarea,select{outline:none}
+.hide{display:none!important}
+.display{font-family:'Chakra Petch',sans-serif;letter-spacing:.03em}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+.tabnum{font-variant-numeric:tabular-nums}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;display:inline-block;vertical-align:middle}
+.bg-grid{position:fixed;inset:0;z-index:-1;background-image:radial-gradient(640px 420px at 0% 0%,rgba(255,42,61,.14),transparent 65%),radial-gradient(560px 400px at 100% 100%,rgba(34,230,255,.08),transparent 65%),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:auto,auto,48px 48px,48px 48px}
+.screen{min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:0 16px}
+.ring{position:relative;border-radius:50%;padding:3px;background:conic-gradient(var(--red),var(--gold),var(--cyan),var(--red));display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.ring-in{border-radius:50%;background:var(--bg);overflow:hidden;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+.av{width:100%;height:100%;object-fit:cover;display:block}
+.fb-txt{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-weight:700;color:var(--gold);background:linear-gradient(135deg,#24060d,#0b0d14)}
+.center-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.box{width:100%;max-width:420px;background:var(--s1);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.term{background:rgba(0,0,0,.45);border:1px solid rgba(56,240,140,.25);border-radius:16px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ok);line-height:1.65;min-height:68px;margin-bottom:16px}
+.hbox{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--s2);border:1px solid rgba(34,230,255,.3);cursor:pointer;margin-bottom:14px}
+.hbox input{width:20px;height:20px;accent-color:var(--ok)}
+.btn{width:100%;height:46px;border-radius:14px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:filter .2s,transform .15s}
+.btn:hover{filter:brightness(1.1)}
+.btn:active{transform:scale(.98)}
+.btn-main{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
+.btn-ok{background:linear-gradient(135deg,#22c55e,#15803d);color:#041209;font-weight:700}
+.btn-ghost{background:var(--s2);border:1px solid var(--line);color:var(--txt)}
+.btn-cyan{background:rgba(34,230,255,.12);border:1px solid rgba(34,230,255,.35);color:var(--cyan)}
+.rcard{width:100%;display:flex;align-items:center;gap:14px;padding:15px;border-radius:18px;background:var(--s2);border:1px solid var(--line);text-align:left;margin-bottom:10px;transition:border-color .2s,transform .2s}
+.rcard:hover{border-color:var(--red);transform:translateY(-2px)}
+.rcard-ico{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.field{display:flex;align-items:center;gap:10px;height:48px;padding:0 14px;border-radius:14px;background:var(--s2);border:1px solid var(--line);margin-bottom:10px}
+.field:focus-within{border-color:var(--red)}
+.field input{flex:1;background:none;border:none;font-size:14px;min-width:0}
+.topbar{position:sticky;top:0;z-index:30;background:rgba(7,8,13,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1200px;margin:0 auto;padding:0 16px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:18px;letter-spacing:.06em;white-space:nowrap;flex-shrink:0}
+.navlinks{display:none;gap:22px;align-items:center}
+.navlinks button{font-size:14px;font-weight:500;color:var(--txm);padding:6px 0;border-bottom:2px solid transparent;white-space:nowrap}
+.navlinks button.on{color:#fff;border-color:var(--red)}
+.topact{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.icon-btn{position:relative;width:40px;height:40px;border-radius:12px;background:var(--s2);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;color:var(--txt)}
+.icon-btn:hover{border-color:rgba(255,255,255,.25)}
+.badge-cnt{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--red);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cta-sm{padding:8px 14px;border-radius:12px;background:var(--red);color:#fff;font-size:12px;font-weight:600;white-space:nowrap}
+main.store{max-width:1200px;margin:0 auto;padding:20px 16px 96px}
+.searchbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.sinput{flex:1;min-width:220px;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;border-radius:14px;background:var(--s1);border:1px solid var(--line)}
+.sinput:focus-within{border-color:var(--red)}
+.sinput input{flex:1;background:none;border:none;font-size:14px}
+.sel{height:46px;padding:0 12px;border-radius:14px;background:var(--s1);border:1px solid var(--line);font-size:13px}
+.sel option{background:var(--s2)}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:24px}
+.banner-card{position:relative;border-radius:24px;border:1px solid var(--line);padding:26px;min-height:200px;display:flex;flex-direction:column;justify-content:space-between;background-size:cover;background-position:center;overflow:hidden}
+.feat-card{border-radius:24px;background:var(--s1);border:1px solid rgba(255,42,61,.35);padding:22px;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.3);cursor:pointer;transition:width .25s,background .25s}
+.dots i.on{width:24px;background:var(--red)}
+.cats-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:20px}
+.cat-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;background:var(--s1);border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--txm);white-space:nowrap}
+.cat-btn.on{background:var(--red);border-color:var(--red);color:#fff}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:22px 0 12px}
+.sec-head h2{font-family:'Chakra Petch',sans-serif;font-size:17px;font-weight:700}
+.grid-apps{display:grid;grid-template-columns:1fr;gap:12px}
+.app-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;background:var(--s1);border:1px solid var(--line);cursor:pointer;transition:border-color .2s,background .2s}
+.app-card:hover{border-color:rgba(255,42,61,.45);background:var(--s2)}
+.app-ic{width:54px;height:54px;border-radius:15px;object-fit:cover;flex-shrink:0;background:var(--s2);border:1px solid var(--line)}
+.app-fb{width:54px;height:54px;border-radius:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:20px;background:linear-gradient(135deg,rgba(255,42,61,.5),rgba(34,230,255,.25));border:1px solid var(--line)}
+.app-info{flex:1;min-width:0}
+.app-info h3{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-meta{font-size:12px;color:var(--txm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.app-price{font-size:12px;font-weight:600;margin-top:3px}
+.acts-row{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.share-btn{width:38px;height:38px;border-radius:11px;background:rgba(34,230,255,.1);border:1px solid rgba(34,230,255,.3);color:var(--cyan);display:inline-flex;align-items:center;justify-content:center}
+.share-btn:hover{background:rgba(34,230,255,.2)}
+.dl-btn{height:38px;padding:0 13px;border-radius:11px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.rank-num{width:26px;height:26px;border-radius:50%;background:rgba(255,42,61,.15);border:1px solid rgba(255,42,61,.4);color:#ff9aa3;font-family:'Chakra Petch',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.notice-bar{padding:12px 16px;border-radius:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;flex-wrap:wrap}
+.notice-cyan{background:rgba(34,230,255,.1);border:1px solid rgba(34,230,255,.3);color:#cffafe}
+.notice-ok{background:var(--s1);border:1px solid rgba(56,240,140,.4)}
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:40;height:62px;background:rgba(7,8,13,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr)}
+.bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:600;color:var(--txm)}
+.bnav button.on{color:var(--red)}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:14px}
+.kpi small{display:block;font-size:11px;color:var(--txm);margin-bottom:4px}
+.kpi b{font-family:'Chakra Petch',sans-serif;font-size:22px}
+.in{width:100%;padding:10px 13px;border-radius:12px;background:var(--s2);border:1px solid var(--line);font-size:13px;margin-bottom:10px}
+.in:focus{border-color:var(--red)}
+.row-i{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row-i:last-child{border:none}
+.mbg{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;padding:0}
+.mbg.open{display:flex}
+.modal{width:100%;max-width:540px;max-height:90vh;overflow-y:auto;background:var(--s1);border:1px solid var(--line);border-radius:26px 26px 0 0;padding:22px;position:relative}
+.mx{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:10px;background:var(--s2);color:var(--txm);display:flex;align-items:center;justify-content:center}
+.shots{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin:12px 0}
+.shots img{height:180px;border-radius:14px;border:1px solid var(--line);cursor:pointer;flex-shrink:0}
+#qrbox{background:#fff;padding:12px;border-radius:16px;width:fit-content;margin:14px auto}
+#toasts{position:fixed;top:14px;right:14px;z-index:90;display:flex;flex-direction:column;gap:8px;max-width:340px;width:calc(100% - 28px);pointer-events:none}
+.toast{background:rgba(21,24,35,.96);border:1px solid rgba(255,42,61,.45);padding:12px 15px;border-radius:14px;font-size:13px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+@media(min-width:768px){
+  .navlinks{display:flex}
+  .bnav{display:none}
+  main.store{padding-bottom:40px}
+  .hero-grid{grid-template-columns:7fr 5fr}
+  .grid-apps{grid-template-columns:repeat(2,1fr)}
+  .kpis{grid-template-columns:repeat(3,1fr)}
+  .mbg{align-items:center;padding:16px}
+  .modal{border-radius:26px}
+}
+@media(min-width:1080px){
+  .grid-apps{grid-template-columns:repeat(3,1fr)}
+  .kpis{grid-template-columns:repeat(6,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 20a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></symbol>
+  <symbol id="i-ghost" viewBox="0 0 24 24"><path d="M5 21V10a7 7 0 0 1 14 0v11l-2.5-2-2.5 2-2-2-2 2-2.5-2z"/><path d="M9.5 11h.01M14.5 11h.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3L12 17.3 6.5 20.4l1-6.3L3 9.7l6.2-.9z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 9-9"/></symbol>
+</svg>
+
+<section id="gate" class="screen center-wrap hide">
+  <div class="box">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ok);margin-bottom:14px" class="mono">
+      <span>SECURE GATEWAY</span><span>BNX SHIELD</span>
+    </div>
+    <div class="term" id="termLines"></div>
+    <label class="hbox"><input type="checkbox" id="hc"><span>I am not a robot</span></label>
+    <button class="btn btn-ok" onclick="passGate()">Verify & Continue</button>
+  </div>
+</section>
+
+<section id="loader" class="screen center-wrap hide">
+  <div style="text-align:center">
+    <div class="ring" style="width:96px;height:96px;margin:0 auto 16px"><div class="ring-in" id="ldAv"></div></div>
+    <h1 class="display" style="font-size:24px;margin-bottom:6px">BNX APK PRO</h1>
+    <p class="mono" style="font-size:12px;color:var(--ok)">Initializing secure storefront...</p>
+  </div>
+</section>
+
+<section id="entry" class="screen center-wrap hide">
+  <div class="box" style="text-align:center">
+    <div class="ring" style="width:88px;height:88px;margin:0 auto 14px"><div class="ring-in" id="enAv"></div></div>
+    <h1 class="display" style="font-size:22px">Choose Access Mode</h1>
+    <p style="font-size:13px;color:var(--txm);margin:4px 0 18px">Select how you want to enter BNX APK PRO</p>
+    <button class="rcard" onclick="chooseRole('super')">
+      <div class="rcard-ico" style="background:linear-gradient(135deg,#ff2a3d,#8a0010)"><svg class="i"><use href="#i-crown"/></svg></div>
+      <div><b>Super User</b><div style="font-size:12px;color:var(--txm)">Account login · Paid apps, coins & promos</div></div>
+    </button>
+    <button class="rcard" onclick="chooseRole('normal')">
+      <div class="rcard-ico" style="background:linear-gradient(135deg,#22e6ff,#2563eb)"><svg class="i"><use href="#i-user"/></svg></div>
+      <div><b>Normal User</b><div style="font-size:12px;color:var(--txm)">Browse catalog & download free APKs</div></div>
+    </button>
+    <button class="rcard" onclick="chooseRole('guest')">
+      <div class="rcard-ico" style="background:rgba(255,255,255,.1)"><svg class="i"><use href="#i-ghost"/></svg></div>
+      <div><b>Guest</b><div style="font-size:12px;color:var(--txm)">Quick search without signing in</div></div>
+    </button>
+  </div>
+</section>
+
+<section id="login" class="screen center-wrap hide">
+  <div class="box">
+    <h1 class="display" style="font-size:22px;text-align:center">BNX APK PRO</h1>
+    <p style="font-size:13px;color:var(--txm);text-align:center;margin:4px 0 16px">Super User Authentication</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--s2);padding:4px;border-radius:14px;margin-bottom:14px">
+      <button id="tabL" class="btn" style="height:36px;background:var(--red);color:#fff" onclick="authTab('login')">Login</button>
+      <button id="tabR" class="btn" style="height:36px;color:var(--txm)" onclick="authTab('register')">Register</button>
+    </div>
+    <div id="fName" class="field hide"><svg class="i"><use href="#i-user"/></svg><input id="inName" placeholder="Username"></div>
+    <div class="field"><input id="inEmail" type="email" placeholder="Email address"></div>
+    <div class="field"><input id="inPw" type="password" placeholder="Password"></div>
+    <div id="fPw2" class="field hide"><input id="inPw2" type="password" placeholder="Confirm password"></div>
+    <div id="loginMsg" style="font-size:12px;color:var(--err);min-height:18px;margin-bottom:8px"></div>
+    <button class="btn btn-main" id="authBtn" onclick="authSubmit()">Sign In</button>
+    <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:12px">
+      <button style="color:var(--cyan)" onclick="resetPw()">Forgot password?</button>
+      <button style="color:var(--txm)" onclick="showScreen('entry')">Back to access</button>
+    </div>
+  </div>
+</section>
+
+<section id="home" class="screen hide">
+  <header class="topbar">
+    <div class="topbar-in">
+      <button class="brand" ondblclick="openAdminGate()" onclick="navTo('home')">BNX APK PRO</button>
+      <nav class="navlinks">
+        <button id="d-home" class="on" onclick="navTo('home')">Home</button>
+        <button id="d-explore" onclick="navTo('explore')">Explore</button>
+        <button id="d-updates" onclick="navTo('updates')">Updates</button>
+        <button id="d-profile" onclick="navTo('profile')">Profile</button>
+      </nav>
+      <div class="topact">
+        <button class="icon-btn" onclick="openNotif()" title="Releases"><svg class="i"><use href="#i-bell"/></svg><span class="badge-cnt" id="bellCount">0</span></button>
+        <button class="cta-sm hide" id="topAdmBtn" onclick="openAdminGate()">Control Room</button>
+        <button class="cta-sm" id="topLoginBtn" onclick="showScreen('login')">Super Login</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="store">
+    <div id="annBar" class="notice-bar notice-cyan hide"></div>
+    <div id="sharedSpotlight" class="notice-bar notice-ok hide"></div>
+
+    <div id="viewStore">
+      <div class="searchbar">
+        <div class="sinput"><svg class="i"><use href="#i-search"/></svg><input id="q" placeholder="Search APKs, tools, games, bots, projects..." oninput="onQ(this.value)"></div>
+        <select class="sel" id="priceSel" onchange="renderHome()">
+          <option value="all">All Pricing</option>
+          <option value="free">Free Only</option>
+          <option value="paid">Coins Only</option>
+        </select>
+        <select class="sel" id="sortSel" onchange="renderHome()">
+          <option value="popular">Most Downloaded</option>
+          <option value="rating">Top Rated</option>
+          <option value="newest">Newest</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </div>
+
+      <div id="heroSection" class="hero-grid">
+        <div class="banner-card" id="bnCard"></div>
+        <div class="feat-card" id="featCard"></div>
+      </div>
+
+      <div class="cats-bar" id="catsBar"></div>
+
+      <div id="chartsWrap">
+        <div class="sec-head"><h2>Top Charts</h2></div>
+        <div class="grid-apps" id="chartsGrid"></div>
+      </div>
+
+      <div class="sec-head"><h2 id="resTitle">All Releases</h2></div>
+      <div class="grid-apps" id="resultsGrid"></div>
+    </div>
+
+    <div id="viewUpdates" class="hide">
+      <div class="sec-head"><h2>Latest Releases</h2></div>
+      <div class="grid-apps" id="updatesGrid"></div>
+    </div>
+
+    <div id="viewProfile" class="hide"></div>
+  </main>
+
+  <nav class="bnav">
+    <button id="m-home" class="on" onclick="navTo('home')">Home</button>
+    <button id="m-explore" onclick="navTo('explore')">Explore</button>
+    <button id="m-updates" onclick="navTo('updates')">Updates</button>
+    <button id="m-profile" onclick="navTo('profile')">Profile</button>
+  </nav>
+</section>
+
+<section id="admin" class="screen hide">
+  <header class="topbar">
+    <div class="topbar-in">
+      <button class="cta-sm" style="background:var(--s2);border:1px solid var(--line)" onclick="closeAdmin()">← Storefront</button>
+      <span class="brand">Control Room</span>
+      <button class="cta-sm" onclick="downloadThisHtml()">Download HTML</button>
+    </div>
+  </header>
+  <main class="store">
+    <div class="kpis" id="admStats"></div>
+    <div class="cats-bar">
+      <button class="cat-btn on" id="at-apps" onclick="admTab('apps')">Apps</button>
+      <button class="cat-btn" id="at-users" onclick="admTab('users')">Users</button>
+      <button class="cat-btn" id="at-promo" onclick="admTab('promo')">Promo Codes</button>
+      <button class="cat-btn" id="at-social" onclick="admTab('social')">Banners & Links</button>
+      <button class="cat-btn" id="at-logs" onclick="admTab('logs')">Activity Logs</button>
+    </div>
+    <div id="ad-apps"></div>
+    <div id="ad-users" class="hide"></div>
+    <div id="ad-promo" class="hide"></div>
+    <div id="ad-social" class="hide"></div>
+    <div id="ad-logs" class="hide"></div>
+  </main>
+</section>
+
+<div class="mbg" id="appM" onclick="if(event.target===this)closeM('appM')"><div class="modal" id="appMBody"></div></div>
+<div class="mbg" id="shareM" onclick="if(event.target===this)closeM('shareM')"><div class="modal" id="shareMBody"></div></div>
+<div class="mbg" id="notifM" onclick="if(event.target===this)closeM('notifM')"><div class="modal" id="notifMBody"></div></div>
+<div class="mbg" id="userM" onclick="if(event.target===this)closeM('userM')"><div class="modal" id="userMBody"></div></div>
+<div class="mbg" id="humanM" onclick="if(event.target===this)closeM('humanM')">
+  <div class="modal" style="max-width:380px">
+    <button class="mx" onclick="closeM('humanM')"><svg class="i"><use href="#i-close"/></svg></button>
+    <h3 class="display" style="margin-bottom:12px">Admin Verification</h3>
+    <label class="hbox"><input type="checkbox" id="admHc"><span>I am not a robot</span></label>
+    <button class="btn btn-ok" onclick="confirmAdminHuman()">Open Control Room</button>
+  </div>
+</div>
+<div id="toasts"></div>
+
+<script>
+const ADMIN_UID = "C7XlVTaJrJZxKdbCuw4V0zKVQzE2";
+const PROFILE_IMG = "https://i.postimg.cc/zBw73Vby/file-0000000097c8821194a2105266cdfc03.png";
+const CATS = ["APK Apps","Apps","Ethical Hacking","Games","Bots","Projects"];
+const DEFAULT_BANNERS = [
+  {title:"Latest APK Collection",sub:"Verified mods, utilities, and builds updated daily",img:"",grad:"linear-gradient(135deg,#4b0813,#10131e 75%)",link:""},
+  {title:"Ethical Hacking Hub",sub:"Security toolkits, network testers, and lab utilities",img:"",grad:"linear-gradient(135deg,#1b1140,#091d2c 75%)",link:""},
+  {title:"Super User Access",sub:"Unlock exclusive tools, coins, and priority releases",img:"",grad:"linear-gradient(135deg,#3c2404,#170910 75%)",link:""}
+];
+const firebaseConfig = {
+  apiKey: "AIzaSyCQ3nxCCIBMt5FXHngzQILTLemM4as8hXc",
+  authDomain: "bnx-apk-pro.firebaseapp.com",
+  projectId: "bnx-apk-pro",
+  storageBucket: "bnx-apk-pro.firebasestorage.app",
+  messagingSenderId: "512904895739",
+  appId: "1:512904895739:web:c9d89cc3873fa1e4a0a45e",
+  measurementId: "G-G3H1Z211NX"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth(), db = firebase.firestore(), storage = firebase.storage();
+const TS = () => firebase.firestore.FieldValue.serverTimestamp();
+const INC = n => firebase.firestore.FieldValue.increment(n);
+
+let currentUser = null, userDoc = null, userUnsub = null, adminUnsubs = [];
+let role = localStorage.getItem('bnx_role') || null;
+let apps = [], allUsers = [], promos = [], logs = [], social = {}, banners = DEFAULT_BANNERS;
+let favs = new Set(JSON.parse(localStorage.getItem('bnx_favs') || '[]'));
+let historyIds = JSON.parse(localStorage.getItem('bnx_history') || '[]');
+let tab = 'home', filterCat = 'all', query = '', bnIndex = 0, editId = null, authMode = 'login';
+let pendingSharedId = (function(){
+  const p = new URLSearchParams(location.search).get('app');
+  if(p) return p.trim();
+  if(location.hash.startsWith('#app=')) return decodeURIComponent(location.hash.slice(5)).trim();
+  const m = location.pathname.match(/^\/app\/([^/]+)$/);
+  return m ? decodeURIComponent(m[1]).trim() : null;
+})();
+let authReady = false, adminOpen = false;
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = v => Number(v || 0);
+const fmtNum = n => { const v = num(n); return v >= 1000 ? (v/1000).toFixed(1)+'K' : String(v); };
+const fmtDate = t => t && t.toDate ? t.toDate().toLocaleString('en-GB') : 'N/A';
+const avg = a => { const r = Object.values(a.ratings || {}); return r.length ? r.reduce((s,x)=>s+x,0)/r.length : 0; };
+const linkTypeOf = a => (a && (a.linkType==='link' || a.category==='Bots' || a.category==='Projects')) ? 'link' : 'apk';
+const btnLabel = a => linkTypeOf(a)==='link' ? 'Open' : 'Download';
+const isAdmin = () => !!currentUser && currentUser.uid === ADMIN_UID;
+const fullAccess = () => isAdmin() || (role === 'super' && !!currentUser && !(userDoc && userDoc.banned));
+const shareUrlFor = id => location.origin + location.pathname + '?app=' + encodeURIComponent(id);
+const ic = n => `<svg class="i"><use href="#i-${n}"/></svg>`;
+
+function toast(msg){
+  const d = document.createElement('div'); d.className='toast'; d.textContent=msg;
+  $('toasts').appendChild(d);
+  setTimeout(()=>d.remove(), 3200);
+}
+function openM(id){ $(id).classList.add('open'); }
+function closeM(id){ $(id).classList.remove('open'); }
+function logEvent(type, detail=''){
+  db.collection('activity_logs').add({type, detail:String(detail).slice(0,200), uid:currentUser?.uid||null, email:currentUser?.email||null, role:role||'none', at:TS()}).catch(()=>{});
+}
+function appIconHtml(a, size='54px'){
+  const l = esc((a.name||'?').trim().charAt(0).toUpperCase());
+  if(!a.iconUrl) return `<div class="app-fb" style="width:${size};height:${size}">${l}</div>`;
+  return `<img class="app-ic" style="width:${size};height:${size}" src="${esc(a.iconUrl)}" alt="${esc(a.name)}" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\\'app-fb\\' style=\\'width:${size};height:${size}\\'>${l}</div>'">`;
+}
+function riskScore(u){
+  const s = u.stats || {};
+  return Math.min(100, num(s.promoWrong)*6 + num(s.uidSearch)*2 + num(s.buyClick) + num(s.loginFail)*5 + num(s.adminTry)*10);
+}
+
+function showScreen(name){
+  ['gate','loader','entry','login','home','admin'].forEach(s => $(s).classList.toggle('hide', s !== name));
+  if(name === 'home') renderAll();
+}
+function passGate(){
+  if(!$('hc').checked) return toast('Please tick the box first');
+  sessionStorage.setItem('bnx_human', '1');
+  runLoader();
+}
+function runLoader(){
+  showScreen('loader');
+  $('ldAv').innerHTML = `<img class="av" src="${PROFILE_IMG}" alt="BNX">`;
+  $('enAv').innerHTML = $('ldAv').innerHTML;
+  const wait = setInterval(() => {
+    if(!authReady) return;
+    clearInterval(wait);
+    if(pendingSharedId){
+      if(!role){ role='normal'; localStorage.setItem('bnx_role','normal'); }
+      showScreen('home');
+      tryOpenPendingShared();
+    } else if((role==='super' && currentUser) || role==='normal' || role==='guest'){
+      showScreen('home');
+    } else {
+      showScreen('entry');
+    }
+  }, 150);
+}
+function tryOpenPendingShared(){
+  if(!pendingSharedId || !apps.length) return;
+  const a = apps.find(x => x.id === pendingSharedId);
+  if(!a) return;
+  pendingSharedId = null;
+  $('sharedSpotlight').classList.remove('hide');
+  $('sharedSpotlight').innerHTML = `<span>Shared App: <b>${esc(a.name)}</b></span><button class="cta-sm" onclick="openApp('${a.id}')">View & Download</button>`;
+  openApp(a.id);
+}
+function chooseRole(r){
+  if(r === 'super' && (!currentUser || userDoc?.banned)) return showScreen('login');
+  role = r; localStorage.setItem('bnx_role', r);
+  logEvent('role', r);
+  showScreen('home');
+}
+
+function authTab(m){
+  authMode = m;
+  $('fName').classList.toggle('hide', m!=='register');
+  $('fPw2').classList.toggle('hide', m!=='register');
+  $('tabL').style.background = m==='login'?'var(--red)':'transparent';
+  $('tabR').style.background = m==='register'?'var(--red)':'transparent';
+  $('authBtn').textContent = m==='register' ? 'Create Account' : 'Sign In';
+}
+function authSubmit(){
+  const email = $('inEmail').value.trim(), pw = $('inPw').value;
+  if(!email || !pw) return ($('loginMsg').textContent = 'Enter email and password');
+  if(authMode === 'register'){
+    const name = $('inName').value.trim(), pw2 = $('inPw2').value;
+    if(!name || pw.length < 6 || pw !== pw2) return ($('loginMsg').textContent = 'Check username and matching 6+ char password');
+    auth.createUserWithEmailAndPassword(email, pw).then(async cred => {
+      await cred.user.updateProfile({displayName: name});
+      await db.collection('users').doc(cred.user.uid).set({name,email,banned:false,coins:0,totalReceived:0,totalSpent:0,stats:{},createdAt:TS(),lastLogin:TS()});
+      role='super'; localStorage.setItem('bnx_role','super');
+      toast('Account created'); showScreen('home');
+    }).catch(e => $('loginMsg').textContent = e.message);
+  } else {
+    auth.signInWithEmailAndPassword(email, pw).then(() => {
+      role='super'; localStorage.setItem('bnx_role','super');
+      toast('Login successful'); showScreen('home');
+    }).catch(e => $('loginMsg').textContent = e.message);
+  }
+}
+function resetPw(){
+  const email = currentUser?.email || $('inEmail').value.trim();
+  if(!email) return toast('Enter email first');
+  auth.sendPasswordResetEmail(email).then(()=>toast('Reset link sent')).catch(e=>toast(e.message));
+}
+function logout(){
+  auth.signOut().then(()=>{ role=null; localStorage.removeItem('bnx_role'); toast('Logged out'); showScreen('entry'); });
+}
+
+auth.onAuthStateChanged(async u => {
+  currentUser = u;
+  if(userUnsub){ userUnsub(); userUnsub=null; }
+  adminUnsubs.forEach(f=>f()); adminUnsubs=[];
+  userDoc = null;
+  if(u){
+    const ref = db.collection('users').doc(u.uid);
+    userUnsub = ref.onSnapshot(s => { userDoc = s.exists ? s.data() : null; renderAll(); });
+    if(isAdmin()){
+      adminUnsubs.push(db.collection('users').onSnapshot(s => { allUsers = s.docs.map(d=>({id:d.id,...d.data()})); if(adminOpen) renderAdmUsers(); }));
+      adminUnsubs.push(db.collection('promo_codes').onSnapshot(s => { promos = s.docs.map(d=>({id:d.id,...d.data()})); if(adminOpen) renderAdmPromos(); }));
+      adminUnsubs.push(db.collection('activity_logs').orderBy('at','desc').limit(150).onSnapshot(s => { logs = s.docs.map(d=>({id:d.id,...d.data()})); if(adminOpen) renderAdmLogs(); }));
+    }
+  }
+  authReady = true;
+  renderAll();
+});
+
+db.collection('apps').onSnapshot(s => {
+  apps = s.docs.map(d=>({id:d.id,...d.data()}));
+  $('bellCount').textContent = apps.length;
+  renderAll();
+  tryOpenPendingShared();
+  if(adminOpen) renderAdmApps();
+});
+db.collection('settings').doc('social').onSnapshot(s => { social = s.exists ? s.data() : {}; renderAll(); });
+db.collection('settings').doc('banners').onSnapshot(s => {
+  const items = s.exists && Array.isArray(s.data().items) ? s.data().items : [];
+  banners = items.length ? items.map((b,i)=>({...DEFAULT_BANNERS[i%3],...b})) : DEFAULT_BANNERS;
+  renderBanners();
+});
+
+function renderAll(){
+  $('topAdmBtn').classList.toggle('hide', !isAdmin());
+  $('topLoginBtn').classList.toggle('hide', !!currentUser);
+  if(social.announcement){
+    $('annBar').classList.remove('hide');
+    $('annBar').innerHTML = `<span>📢 ${esc(social.announcement)}</span>`;
+  } else $('annBar').classList.add('hide');
+  if(!$('home').classList.contains('hide')) renderHome();
+}
+function navTo(t){
+  tab = t;
+  ['home','explore','updates','profile'].forEach(k => {
+    $('d-'+k).classList.toggle('on', k===t);
+    $('m-'+k).classList.toggle('on', k===t);
+  });
+  $('viewStore').classList.toggle('hide', t==='updates'||t==='profile');
+  $('viewUpdates').classList.toggle('hide', t!=='updates');
+  $('viewProfile').classList.toggle('hide', t!=='profile');
+  renderHome();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function onQ(v){ query = v.trim(); renderHome(); }
+function renderBanners(){
+  const b = banners[bnIndex] || DEFAULT_BANNERS[0];
+  const bg = b.img ? `linear-gradient(90deg,rgba(7,8,13,.9),rgba(7,8,13,.45)),url('${esc(b.img)}')` : b.grad;
+  $('bnCard').style.backgroundImage = bg;
+  $('bnCard').innerHTML = `
+    <div>
+      <div style="font-size:12px;color:var(--cyan);font-weight:600;margin-bottom:6px">Featured Showcase</div>
+      <h1 class="display" style="font-size:24px;margin-bottom:6px">${esc(b.title)}</h1>
+      <p style="font-size:13px;color:#d1d5db">${esc(b.sub)}</p>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px">
+      <div class="dots">${banners.map((_,i)=>`<i class="${i===bnIndex?'on':''}" onclick="bnIndex=${i};renderBanners()"></i>`).join('')}</div>
+      ${b.link ? `<a href="${esc(b.link)}" target="_blank" class="cta-sm">Open Link</a>` : ''}
+    </div>`;
+}
+function appCardHtml(a, rank){
+  const price = num(a.price);
+  return `<div class="app-card" onclick="openApp('${a.id}')">
+    ${rank ? `<div class="rank-num">${rank}</div>` : ''}
+    ${appIconHtml(a)}
+    <div class="app-info">
+      <h3>${esc(a.name)}</h3>
+      <div class="app-meta tabnum">${esc(a.category||'App')} · ${esc(a.size||'Ready')} · ★ ${avg(a).toFixed(1)} · ${fmtNum(a.downloads)} DL</div>
+      <div class="app-price" style="color:${price>0?'var(--gold)':'var(--ok)'}">${price>0?price+' coins':'Free'}</div>
+    </div>
+    <div class="acts-row">
+      <button class="share-btn" title="Share app link" aria-label="Share ${esc(a.name)}" onclick="event.stopPropagation();openShare('${a.id}')">${ic('share')}</button>
+      <button class="dl-btn" onclick="event.stopPropagation();downloadApp('${a.id}')">${ic(linkTypeOf(a)==='link'?'link':'dl')}<span>${btnLabel(a)}</span></button>
+    </div>
+  </div>`;
+}
+function renderHome(){
+  if(tab === 'profile') return renderProfile();
+  if(tab === 'updates'){
+    const latest = [...apps].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,24);
+    $('updatesGrid').innerHTML = latest.map(a => appCardHtml(a)).join('') || '<p style="color:var(--txm)">No apps yet.</p>';
+    return;
+  }
+  renderBanners();
+  const feat = apps.find(a=>a.featured) || [...apps].sort((a,b)=>avg(b)-avg(a))[0];
+  $('featCard').innerHTML = feat ? `
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:12px"><span style="color:var(--gold);font-weight:700">BEST CHOICE</span><span class="tabnum" style="color:var(--txm)">★ ${avg(feat).toFixed(1)} · ${fmtNum(feat.downloads)} DL</span></div>
+      <div style="display:flex;gap:14px;align-items:center;cursor:pointer" onclick="openApp('${feat.id}')">
+        ${appIconHtml(feat,'64px')}
+        <div style="min-width:0"><h2 class="display" style="font-size:19px">${esc(feat.name)}</h2><div style="font-size:12px;color:var(--cyan)">${esc(feat.category||'App')}</div><p style="font-size:12px;color:var(--txm);margin-top:4px">${esc((feat.description||'').slice(0,85))}</p></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-main" style="flex:1;height:40px" onclick="downloadApp('${feat.id}')">${btnLabel(feat)}</button>
+      <button class="share-btn" style="height:40px;width:44px" onclick="openShare('${feat.id}')" title="Share">${ic('share')}</button>
+    </div>` : '<p style="color:var(--txm)">No featured app yet.</p>';
+
+  $('heroSection').classList.toggle('hide', tab!=='home' || !!query);
+  $('chartsWrap').classList.toggle('hide', tab!=='home' || !!query || filterCat!=='all');
+  $('catsBar').innerHTML = `<button class="cat-btn ${filterCat==='all'?'on':''}" onclick="filterCat='all';renderHome()">All (${apps.length})</button>` +
+    CATS.map(c => `<button class="cat-btn ${filterCat===c?'on':''}" onclick="filterCat='${c}';renderHome()">${esc(c)} (${apps.filter(a=>a.category===c).length})</button>`).join('');
+
+  const top = [...apps].sort((a,b)=>num(b.downloads)-num(a.downloads)).slice(0,6);
+  $('chartsGrid').innerHTML = top.map((a,i)=>appCardHtml(a, i+1)).join('');
+
+  const pF = $('priceSel').value, sF = $('sortSel').value;
+  let list = apps.filter(a => (filterCat==='all' || a.category===filterCat) &&
+    (!query || (a.name||'').toLowerCase().includes(query.toLowerCase()) || (a.description||'').toLowerCase().includes(query.toLowerCase())) &&
+    (pF==='all' || (pF==='free'&&num(a.price)===0) || (pF==='paid'&&num(a.price)>0)));
+  list.sort((a,b)=> sF==='rating'?avg(b)-avg(a) : sF==='newest'?(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0) : sF==='name'?(a.name||'').localeCompare(b.name||'') : num(b.downloads)-num(a.downloads));
+  $('resTitle').textContent = query ? `Search Results (${list.length})` : `All Releases (${list.length})`;
+  $('resultsGrid').innerHTML = list.map(a => appCardHtml(a)).join('') || '<p style="color:var(--txm)">No apps found.</p>';
+}
+
+function renderProfile(){
+  const name = userDoc?.name || currentUser?.displayName || 'Guest';
+  const photo = userDoc?.photo || currentUser?.photoURL || PROFILE_IMG;
+  const favApps = apps.filter(a => favs.has(a.id));
+  const socHtml = [['tg','Telegram'],['co','Co-Admin'],['tt','TikTok'],['yt','YouTube'],['ig','Instagram'],['wa','WhatsApp']]
+    .filter(([k])=>social[k]).map(([k,l])=>`<a href="${esc(social[k])}" target="_blank" class="cat-btn">${l}</a>`).join('');
+  $('viewProfile').innerHTML = `
+    <div class="card">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px">
+        <div class="ring" style="width:82px;height:82px"><div class="ring-in"><img class="av" src="${esc(photo)}" alt=""></div></div>
+        <div style="flex:1;min-width:200px">
+          <h2 class="display" style="font-size:22px">${esc(currentUser?name:'Guest')}</h2>
+          <div style="font-size:13px;color:var(--txm)">${esc(currentUser?.email||'Browsing without an account')}</div>
+          ${userDoc?.bio?`<p style="font-size:13px;margin-top:6px">${esc(userDoc.bio)}</p>`:''}
+        </div>
+        ${isAdmin()?`<button class="cta-sm" onclick="openAdminGate()">Control Room</button>`:''}
+      </div>
+      <div class="kpis" style="margin-top:16px;margin-bottom:0">
+        <div class="kpi"><small>Coin Balance</small><b style="color:var(--gold)">${num(userDoc?.coins)}</b></div>
+        <div class="kpi"><small>Received</small><b style="color:var(--ok)">${num(userDoc?.totalReceived)}</b></div>
+        <div class="kpi"><small>Spent</small><b style="color:var(--err)">${num(userDoc?.totalSpent)}</b></div>
+        <div class="kpi"><small>Favorites</small><b style="color:var(--cyan)">${favApps.length}</b></div>
+      </div>
+    </div>
+    ${currentUser ? `<div class="card">
+      <h3 class="display" style="font-size:15px;margin-bottom:10px">Edit Profile</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input class="in" id="pfName" placeholder="Username" value="${esc(name)}">
+        <input class="in" id="pfPhoto" placeholder="Avatar URL" value="${esc(userDoc?.photo||'')}">
+      </div>
+      <input class="in" id="pfBio" placeholder="Short bio" value="${esc(userDoc?.bio||'')}">
+      <button class="btn btn-cyan" onclick="saveProfile()">Save Profile</button>
+    </div>
+    <div class="card">
+      <h3 class="display" style="font-size:15px;margin-bottom:10px">Redeem Promo Code</h3>
+      <div style="display:flex;gap:8px"><input class="in" style="margin:0" id="promoIn" placeholder="Enter promo code"><button class="cta-sm" onclick="redeemPromo()">Redeem</button></div>
+    </div>` : ''}
+    ${socHtml?`<div class="cats-bar">${socHtml}</div>`:''}
+    <div class="card">
+      <h3 class="display" style="font-size:15px;margin-bottom:10px">Favorites (${favApps.length})</h3>
+      <div class="grid-apps">${favApps.map(a=>appCardHtml(a)).join('') || '<p style="color:var(--txm)">No favorites yet.</p>'}</div>
+    </div>
+    <div class="card" style="display:flex;flex-wrap:wrap;gap:8px">
+      ${currentUser ? `<button class="btn btn-ghost" style="flex:1" onclick="resetPw()">Change Password</button><button class="btn btn-main" style="flex:1" onclick="logout()">Logout</button>` : `<button class="btn btn-main" onclick="showScreen('login')">Super User Login</button>`}
+    </div>`;
+}
+async function saveProfile(){
+  if(!currentUser) return;
+  const name = $('pfName').value.trim(), photo = $('pfPhoto').value.trim(), bio = $('pfBio').value.trim();
+  if(!name) return toast('Name required');
+  await currentUser.updateProfile({displayName:name, photoURL:photo||undefined});
+  await db.collection('users').doc(currentUser.uid).set({name,photo,bio},{merge:true});
+  toast('Profile updated');
+}
+async function redeemPromo(){
+  if(!currentUser) return toast('Login required');
+  const code = $('promoIn').value.trim();
+  if(!/^[A-Za-z0-9_-]{2,40}$/.test(code)) return toast('Invalid code');
+  if(userDoc?.redeemed?.[code]) return toast('Already redeemed');
+  const ps = await db.collection('promo_codes').doc(code).get();
+  if(!ps.exists || ps.data().active===false) return toast('Invalid promo code');
+  const amt = num(ps.data().amount);
+  await db.collection('users').doc(currentUser.uid).update({coins:INC(amt),totalReceived:INC(amt),lastPromo:code,['redeemed.'+code]:true});
+  logEvent('promo', code+' +'+amt);
+  toast('+'+amt+' coins added');
+}
+
+function openApp(id){
+  const a = apps.find(x=>x.id===id); if(!a) return;
+  const my = currentUser && a.ratings ? (a.ratings[currentUser.uid]||0) : 0;
+  const shots = (a.screenshots||[]).filter(Boolean).map(s=>`<img src="${esc(s)}" referrerpolicy="no-referrer" onclick="window.open('${esc(s)}','_blank')">`).join('');
+  $('appMBody').innerHTML = `
+    <button class="mx" onclick="closeM('appM')">${ic('close')}</button>
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px;padding-right:34px">
+      ${appIconHtml(a,'68px')}
+      <div>
+        <h3 class="display" style="font-size:19px">${esc(a.name)}</h3>
+        <div style="font-size:12px;color:var(--txm)">${esc(a.category||'App')} ${a.versionName?'· '+esc(a.versionName):''} ${a.size?'· '+esc(a.size):''}</div>
+        <div style="font-size:12px;margin-top:4px;color:${num(a.price)>0?'var(--gold)':'var(--ok)'}">${num(a.price)>0?a.price+' coins':'Free'} · ★ ${avg(a).toFixed(1)} · ${fmtNum(a.downloads)} DL</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:#d1d5db;line-height:1.55;margin-bottom:10px">${esc(a.description||'No description provided.')}</p>
+    ${a.changelog?`<div class="card" style="padding:12px;margin-bottom:10px"><div style="font-size:11px;color:var(--cyan);font-weight:700">WHAT'S NEW</div><div style="font-size:12px;margin-top:4px">${esc(a.changelog)}</div></div>`:''}
+    ${shots?`<div class="shots">${shots}</div>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn btn-main" style="flex:1" onclick="downloadApp('${a.id}')">${btnLabel(a)}</button>
+      <button class="btn btn-cyan" style="width:auto;padding:0 16px" onclick="openShare('${a.id}')">${ic('share')} Share</button>
+      <button class="btn btn-ghost" style="width:auto;padding:0 14px" onclick="toggleFav('${a.id}')">${ic('star')} ${favs.has(a.id)?'Saved':'Save'}</button>
+    </div>
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:14px;font-size:24px">
+      ${[1,2,3,4,5].map(n=>`<span style="cursor:pointer;color:${n<=my?'var(--gold)':'#4b5563'}" onclick="rateApp('${a.id}',${n})">★</span>`).join('')}
+    </div>`;
+  openM('appM');
+}
+function openShare(id){
+  const a = apps.find(x=>x.id===id); if(!a) return;
+  const url = shareUrlFor(id), txt = encodeURIComponent(`Check out ${a.name} on BNX APK PRO`), eu = encodeURIComponent(url);
+  $('shareMBody').innerHTML = `
+    <button class="mx" onclick="closeM('shareM')">${ic('close')}</button>
+    <h3 class="display" style="font-size:18px;margin-bottom:4px">Share ${esc(a.name)}</h3>
+    <p style="font-size:12px;color:var(--txm);margin-bottom:14px">Anyone clicking this link lands directly on your website</p>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <input class="in mono" style="margin:0;color:var(--cyan)" id="shUrl" readonly value="${esc(url)}">
+      <button class="cta-sm" onclick="copyShareUrl('${a.id}')">Copy</button>
+    </div>
+    <div id="qrbox"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px">
+      <a href="https://t.me/share/url?url=${eu}&text=${txt}" target="_blank" class="btn btn-ghost" style="height:38px;font-size:12px">Telegram</a>
+      <a href="https://wa.me/?text=${txt}%20${eu}" target="_blank" class="btn btn-ghost" style="height:38px;font-size:12px">WhatsApp</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=${eu}" target="_blank" class="btn btn-ghost" style="height:38px;font-size:12px">Facebook</a>
+    </div>
+    <button class="btn btn-cyan" style="margin-top:10px" onclick="nativeShare('${a.id}')">Share via Device Menu</button>`;
+  openM('shareM');
+  new QRCode($('qrbox'), {text:url, width:160, height:160, colorDark:'#07080d', colorLight:'#ffffff'});
+}
+function copyShareUrl(id){
+  const a = apps.find(x=>x.id===id);
+  navigator.clipboard.writeText($('shUrl').value).then(()=>{ logEvent('share', a ? a.name : id); toast('Share link copied'); });
+}
+function nativeShare(id){
+  const a = apps.find(x=>x.id===id);
+  const url = shareUrlFor(id);
+  if(navigator.share) navigator.share({title:(a?a.name:'App')+' - BNX APK PRO', url}).then(()=>logEvent('share', a?a.name:id)).catch(()=>{});
+  else copyShareUrl(id);
+}
+function toggleFav(id){
+  favs.has(id)?favs.delete(id):favs.add(id);
+  localStorage.setItem('bnx_favs', JSON.stringify([...favs]));
+  openApp(id);
+}
+function rateApp(id, s){
+  if(!currentUser) return toast('Login required to rate');
+  db.collection('apps').doc(id).update({[`ratings.${currentUser.uid}`]:s}).then(()=>{ toast('Rated '+s+' stars'); openApp(id); });
+}
+async function downloadApp(id){
+  const a = apps.find(x=>x.id===id); if(!a || !a.downloadLink) return toast('Link unavailable');
+  const price = num(a.price), w = window.open('', '_blank');
+  if(price > 0){
+    if(!fullAccess()){ if(w) w.close(); return toast('Super User login required'); }
+    try{
+      await db.runTransaction(async tx => {
+        const ref = db.collection('users').doc(currentUser.uid), s = await tx.get(ref);
+        const c = num((s.data()||{}).coins); if(c < price) throw new Error('LOW');
+        tx.update(ref, {coins:c-price, totalSpent:INC(price)});
+      });
+    }catch(e){ if(w) w.close(); return toast(e.message==='LOW'?'Not enough coins':e.message); }
+  }
+  db.collection('apps').doc(id).update({downloads:INC(1)}).catch(()=>{});
+  logEvent(linkTypeOf(a)==='link'?'open':'download', a.name);
+  let u = a.downloadLink.trim(); if(!/^https?:\/\//i.test(u)) u='https://'+u;
+  if(w && !w.closed) w.location.href = u; else window.open(u,'_blank');
+}
+function openNotif(){
+  const latest = [...apps].sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,8);
+  $('notifMBody').innerHTML = `<button class="mx" onclick="closeM('notifM')">${ic('close')}</button><h3 class="display" style="margin-bottom:12px">Latest Releases</h3>` +
+    latest.map(a=>`<div class="row-i" style="cursor:pointer" onclick="closeM('notifM');openApp('${a.id}')"><div style="display:flex;gap:10px;align-items:center">${appIconHtml(a,'40px')}<div><b>${esc(a.name)}</b><div style="font-size:11px;color:var(--txm)">${esc(a.category)}</div></div></div></div>`).join('');
+  openM('notifM');
+}
+
+function openAdminGate(){
+  if(!isAdmin()) return toast('Admin only');
+  $('admHc').checked = false; openM('humanM');
+}
+function confirmAdminHuman(){
+  if(!$('admHc').checked) return toast('Tick the checkbox first');
+  closeM('humanM'); adminOpen=true; showScreen('admin'); admTab('apps');
+}
+function closeAdmin(){ adminOpen=false; showScreen('home'); }
+function admTab(t){
+  ['apps','users','promo','social','logs'].forEach(k => {
+    $('ad-'+k).classList.toggle('hide', k!==t);
+    $('at-'+k).classList.toggle('on', k===t);
+  });
+  renderAdmStats();
+  if(t==='apps') renderAdmApps();
+  if(t==='users') renderAdmUsers();
+  if(t==='promo') renderAdmPromos();
+  if(t==='social') renderAdmSocial();
+  if(t==='logs') renderAdmLogs();
+}
+function renderAdmStats(){
+  const dl = apps.reduce((s,a)=>s+num(a.downloads),0);
+  $('admStats').innerHTML = [
+    ['Users',allUsers.length],['Apps',apps.length],['Downloads',fmtNum(dl)],
+    ['Banned',allUsers.filter(u=>u.banned).length],['Promos',promos.length],['Logs',logs.length]
+  ].map(([l,v])=>`<div class="kpi"><small>${l}</small><b>${v}</b></div>`).join('');
+}
+function renderAdmApps(){
+  $('ad-apps').innerHTML = `
+    <div class="card">
+      <h3 class="display" style="font-size:16px;margin-bottom:12px">${editId?'Edit App':'Publish New App'}</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px">
+        <input class="in" id="f_name" placeholder="App Name *">
+        <select class="in" id="f_cat">${CATS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>
+        <input class="in" id="f_verName" placeholder="Version (e.g. v2.4)">
+        <input class="in" id="f_size" placeholder="Size (e.g. 42 MB)">
+        <input class="in" id="f_price" type="number" min="0" placeholder="Price coins (0=Free)">
+        <input class="in" id="f_link" placeholder="Download or Project Link *">
+      </div>
+      <textarea class="in" id="f_desc" placeholder="Description"></textarea>
+      <textarea class="in" id="f_chg" placeholder="What's New / Changelog"></textarea>
+      <input class="in" id="f_icon" placeholder="Icon URL">
+      <input class="in" id="f_shots" placeholder="Screenshots (comma separated URLs)">
+      <div style="display:flex;gap:14px;margin-bottom:12px;font-size:13px">
+        <label><input type="checkbox" id="f_feat"> Featured</label>
+        <label><input type="checkbox" id="f_ver" checked> Verified</label>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-main" onclick="saveAdmApp()">Save App</button>
+        ${editId?`<button class="btn btn-ghost" onclick="editId=null;renderAdmApps()">Cancel</button>`:''}
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="display" style="font-size:16px;margin-bottom:10px">Catalog (${apps.length})</h3>
+      ${apps.map(a=>`<div class="row-i">
+        <div style="display:flex;gap:10px;align-items:center;min-width:0">${appIconHtml(a,'42px')}<div style="min-width:0"><b>${esc(a.name)}</b><div style="font-size:11px;color:var(--txm)">${esc(a.category)} · ${num(a.downloads)} DL</div></div></div>
+        <div class="acts-row">
+          <button class="icon-btn" onclick="navigator.clipboard.writeText('${shareUrlFor(a.id)}');toast('Share link copied')" title="Copy Share URL">${ic('share')}</button>
+          <button class="icon-btn" onclick="editAdmApp('${a.id}')" title="Edit">${ic('edit')}</button>
+          <button class="icon-btn" style="color:var(--err)" onclick="delAdmApp('${a.id}')" title="Delete">${ic('trash')}</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+function editAdmApp(id){
+  const a = apps.find(x=>x.id===id); if(!a) return;
+  editId = id; renderAdmApps();
+  $('f_name').value=a.name||''; $('f_cat').value=a.category||'APK Apps'; $('f_verName').value=a.versionName||'';
+  $('f_size').value=a.size||''; $('f_price').value=a.price||0; $('f_link').value=a.downloadLink||'';
+  $('f_desc').value=a.description||''; $('f_chg').value=a.changelog||''; $('f_icon').value=a.iconUrl||'';
+  $('f_shots').value=(a.screenshots||[]).join(', '); $('f_feat').checked=!!a.featured; $('f_ver').checked=a.verified!==false;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function saveAdmApp(){
+  const name = $('f_name').value.trim(), downloadLink = $('f_link').value.trim(), category = $('f_cat').value;
+  if(!name || !downloadLink) return toast('Name & link required');
+  const data = {
+    name, category, linkType:(category==='Bots'||category==='Projects')?'link':'apk',
+    versionName:$('f_verName').value.trim(), size:$('f_size').value.trim(),
+    price:Math.max(0,Math.trunc(Number($('f_price').value||0))), downloadLink,
+    description:$('f_desc').value.trim(), changelog:$('f_chg').value.trim(),
+    iconUrl:$('f_icon').value.trim(), screenshots:$('f_shots').value.split(',').map(s=>s.trim()).filter(Boolean),
+    featured:$('f_feat').checked, verified:$('f_ver').checked
+  };
+  if(editId) db.collection('apps').doc(editId).update(data).then(()=>{ editId=null; toast('Updated'); renderAdmApps(); });
+  else db.collection('apps').add({...data, downloads:0, ratings:{}, createdAt:TS()}).then(()=>{ toast('Published'); renderAdmApps(); });
+}
+function delAdmApp(id){ if(confirm('Delete app?')) db.collection('apps').doc(id).delete().then(()=>toast('Deleted')); }
+function renderAdmUsers(){
+  $('ad-users').innerHTML = `<div class="card"><h3 class="display" style="margin-bottom:10px">Users (${allUsers.length})</h3>` +
+    allUsers.map(u=>`<div class="row-i" style="cursor:pointer" onclick="openUserM('${u.id}')"><div><b>${esc(u.name||'Unnamed')}</b> ${u.banned?'<span style="color:var(--err);font-size:11px">BANNED</span>':''}<div style="font-size:12px;color:var(--txm)">${esc(u.email)}</div></div><div class="tabnum" style="font-size:12px;color:var(--gold)">Risk ${riskScore(u)}% · ${num(u.coins)} coins</div></div>`).join('') + `</div>`;
+}
+function openUserM(uid){
+  const u = allUsers.find(x=>x.id===uid); if(!u) return;
+  $('userMBody').innerHTML = `<button class="mx" onclick="closeM('userM')">${ic('close')}</button>
+    <h3 class="display">${esc(u.name||'User')}</h3><p style="font-size:12px;color:var(--txm);margin-bottom:12px">${esc(u.email)}</p>
+    <div style="display:flex;gap:6px;margin-bottom:12px">${[50,100,500].map(n=>`<button class="cta-sm" onclick="db.collection('users').doc('${uid}').update({coins:INC(${n}),totalReceived:INC(${n})}).then(()=>toast('+${n} coins'))">+${n}</button>`).join('')}</div>
+    ${u.banned ? `<button class="btn btn-ok" onclick="db.collection('users').doc('${uid}').update({banned:false,banReason:''}).then(()=>{closeM('userM');toast('Unbanned')})">Unban Account</button>`
+      : `<input class="in" id="bRsn" placeholder="Ban reason"><button class="btn btn-main" onclick="db.collection('users').doc('${uid}').update({banned:true,banReason:$('bRsn').value||'Violation'}).then(()=>{closeM('userM');toast('Banned')})">Ban Account</button>`}`;
+  openM('userM');
+}
+function renderAdmPromos(){
+  $('ad-promo').innerHTML = `<div class="card"><div style="display:flex;gap:8px"><input class="in" style="margin:0" id="pcC" placeholder="Code"><input class="in" style="margin:0" id="pcA" type="number" placeholder="Coins"><button class="cta-sm" onclick="db.collection('promo_codes').doc($('pcC').value.trim()).set({amount:Number($('pcA').value||0),active:true,createdAt:TS()}).then(()=>toast('Saved'))">Add</button></div></div>` +
+    `<div class="card">${promos.map(p=>`<div class="row-i"><b class="mono">${esc(p.id)}</b><span>${num(p.amount)} coins</span><button class="icon-btn" style="color:var(--err)" onclick="db.collection('promo_codes').doc('${esc(p.id)}').delete()">${ic('trash')}</button></div>`).join('')}</div>`;
+}
+function renderAdmSocial(){
+  $('ad-social').innerHTML = `<div class="card">
+    <h3 class="display" style="margin-bottom:10px">Social Links & Announcement</h3>
+    <input class="in" id="sa_ann" placeholder="Announcement Banner" value="${esc(social.announcement||'')}">
+    <input class="in" id="sa_tg" placeholder="Telegram URL" value="${esc(social.tg||'')}">
+    <input class="in" id="sa_wa" placeholder="WhatsApp URL" value="${esc(social.wa||'')}">
+    <input class="in" id="sa_yt" placeholder="YouTube URL" value="${esc(social.yt||'')}">
+    <button class="btn btn-main" onclick="db.collection('settings').doc('social').set({announcement:$('sa_ann').value,tg:$('sa_tg').value,wa:$('sa_wa').value,yt:$('sa_yt').value},{merge:true}).then(()=>toast('Saved'))">Save</button>
+  </div>`;
+}
+function renderAdmLogs(){
+  $('ad-logs').innerHTML = `<div class="card">${logs.map(l=>`<div class="row-i"><div><b>${esc(l.type.toUpperCase())}</b><div style="font-size:12px;color:var(--txm)">${esc(l.email||'guest')} · ${esc(l.detail||'')}</div></div><span style="font-size:11px;color:var(--txd)">${fmtDate(l.at)}</span></div>`).join('')}</div>`;
+}
+function downloadThisHtml(){
+  const blob = new Blob(['<!DOCTYPE html>\n' + document.documentElement.outerHTML], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'bnx-apk-pro.html'; a.click();
+  toast('Standalone HTML downloaded');
+}
+
+if(sessionStorage.getItem('bnx_human') === '1') runLoader();
+else {
+  showScreen('gate');
+  $('termLines').textContent = pendingSharedId ? '> [SYSTEM] SHARED APP LINK DETECTED\n> [SECURITY] VERIFY HUMAN ACCESS TO CONTINUE' : '> [SYSTEM] ACCESS REQUEST RECEIVED\n> [SECURITY] HUMAN VERIFICATION REQUIRED';
+}
+</script>
+</body>
+</html>
